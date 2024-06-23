@@ -27,4 +27,9 @@ public class CinemaContext : DbContext
         modelBuilder.ApplyConfiguration(new ActorMovieConfiguration());
         
     }
+
+    public void AddData(ModelBuilder modelBuilder)
+    {
+        
+    }
 }
