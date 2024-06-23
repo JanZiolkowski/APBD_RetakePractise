@@ -22,7 +22,7 @@ public class MoviesService : IMoviesService
         {
             throw new NotFoundException("No movie has been found in Database!");
         }
-
+        
         ICollection<MovieDTO> newMovies = movies.Select(x => new MovieDTO()
         {
             Name = x.Name,
@@ -36,9 +36,8 @@ public class MoviesService : IMoviesService
                 CharacterName = x.CharacterName
             }).ToList()
         }).OrderByDescending(x => x.ReleaseDate).ToList();
-
+        
         newMovies = FilterMovies(newMovies,ageRating,releaseDate);
-
         return newMovies;
     }
 
@@ -51,15 +50,15 @@ public class MoviesService : IMoviesService
 
         if (ageRating != null && releaseDate == null)
         {
-            return movieDtos.Where(x => x.AgeRating == ageRating).ToList();
+            return movieDtos.Where(x => x.AgeRating.Equals(ageRating)).ToList();
         }
 
-        if (ageRating != null && releaseDate == null)
+        if (ageRating == null && releaseDate != null)
         {
             return movieDtos.Where(x => x.ReleaseDate == releaseDate).ToList();
         }
-        
-        return movieDtos.Where(x => x.ReleaseDate == releaseDate && x.AgeRating == ageRating).ToList();
-     
+
+        return movieDtos.Where(x => x.ReleaseDate == releaseDate && x.AgeRating.Equals(ageRating)).ToList();
+
     }
 }

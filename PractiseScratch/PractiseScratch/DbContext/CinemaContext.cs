@@ -25,11 +25,81 @@ public class CinemaContext : DbContext
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfiguration(new MoviesConfiguration());
         modelBuilder.ApplyConfiguration(new ActorMovieConfiguration());
-        
+        AddData(modelBuilder);
     }
 
-    public void AddData(ModelBuilder modelBuilder)
+    private void AddData(ModelBuilder modelBuilder)
     {
-        
+        modelBuilder.Entity<Actor>().HasData(
+            new Actor()
+            {
+                IdActor = 1,
+                Name = "John",
+                Surname = "Miguells",
+                Nickname = "Vigor"
+            },
+            new Actor()
+            {
+                IdActor = 2,
+                Name = "Vera",
+                Surname = "Bailla",
+                Nickname = "Kiss"
+            },
+            new Actor()
+            {
+                IdActor = 3,
+                Name = "Ala",
+                Surname = "Piska",
+                Nickname = "Vigra"
+            }
+        );
+        modelBuilder.Entity<AgeRating>().HasData(
+            new AgeRating()
+            {
+                IdAgeRating = 1,
+                Name = "Underage"
+            },
+            new AgeRating()
+            {
+                IdAgeRating = 2,
+                Name = "Age"
+            }
+        );
+        modelBuilder.Entity<Movie>().HasData(
+            new Movie()
+            {
+                IdMovie = 1,
+                IdAgeRating = 1,
+                Name = "James Bond",
+                ReleaseDate = DateTime.Now.AddMonths(-3)
+            },
+            new Movie()
+            {
+                IdMovie = 2,
+                IdAgeRating = 2,
+                Name = "Query",
+                ReleaseDate = DateTime.Now.AddMonths(-1)
+            }
+        );
+        modelBuilder.Entity<ActorMovie>().HasData(
+            new ActorMovie()
+            {
+                IdMovie = 1,
+                IdActor = 1,
+                CharacterName = "Bear"
+            },
+            new ActorMovie()
+            {
+                IdMovie = 1,
+                IdActor = 2,
+                CharacterName = "Herrassa"
+            },
+            new ActorMovie()
+            {
+                IdMovie = 2,
+                IdActor = 2,
+                CharacterName = "Jinxa"
+            }
+        );
     }
 }

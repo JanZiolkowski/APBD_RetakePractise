@@ -16,7 +16,7 @@ public class MoviesController : ControllerBase
         _moviesService = moviesService;
     }
     [HttpGet]
-    public async Task<IActionResult> RetrieveMovies([FromQuery] string? ageRating, [FromQuery] DateTime releaseDate)
+    public async Task<IActionResult> RetrieveMovies([FromQuery] string? ageRating, [FromQuery] DateTime? releaseDate)
     {
         try
         {
