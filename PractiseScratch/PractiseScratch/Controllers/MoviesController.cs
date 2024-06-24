@@ -34,4 +34,22 @@ public class MoviesController : ControllerBase
         }
 
     }
+
+    [HttpDelete("{idMovie:int}")]
+    public async Task<IActionResult> DeleteMovie(int idMovie)
+    {
+        try
+        {
+            await _moviesService.DeleteMovieAsync(idMovie);
+            return NoContent();
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+        catch (Exception e)
+        {
+            return Conflict(e.Message);
+        }
+    }
 }

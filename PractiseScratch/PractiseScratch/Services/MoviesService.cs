@@ -61,4 +61,9 @@ public class MoviesService : IMoviesService
         return movieDtos.Where(x => x.ReleaseDate == releaseDate && x.AgeRating.Equals(ageRating)).ToList();
 
     }
+
+    public async Task DeleteMovieAsync(int idMovie)
+    {
+        throw new NotImplementedException();
+    }
 }

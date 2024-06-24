@@ -48,8 +48,8 @@ public class ActorController:ControllerBase
         }
     }
 
-    [HttpDelete("remove/{idActor}")]
-    public async Task<IActionResult> RemoveActor([FromHeader] int idActor)
+    [HttpDelete("remove/{idActor:int}")]
+    public async Task<IActionResult> RemoveActor(int idActor)
     {
         try
         {
@@ -63,6 +63,45 @@ public class ActorController:ControllerBase
         catch (Exception e)
         {
             return StatusCode((int)HttpStatusCode.InternalServerError, e.Message);
+        }
+    }
+    [HttpPut("update/{idActor:int}")]
+    public async Task<IActionResult> ChangeActor([FromBody]ActorUpdateDTO actorUpdateDto,int idActor)
+    {
+        try
+        {
+            await _actorService.ChangeActor(idActor, actorUpdateDto);
+            return NoContent();
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+        catch (Exception e)
+        {
+            return Conflict(e.Message);
+        }
+    }
+
+    [HttpGet("list")]
+    public async Task<IActionResult> GetListOfActors([FromQuery]string? name,[FromQuery] string? surname)
+    {
+        try
+        {
+            var listOfActors = await _actorService.GetListOfAllActors(name,surname);
+            return Ok(listOfActors);
+        }
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+        catch (BadRequestException e)
+        {
+            return BadRequest(e.Message);
+        }
+        catch (Exception e)
+        {
+            return Conflict(e.Message);
         }
     }
 }

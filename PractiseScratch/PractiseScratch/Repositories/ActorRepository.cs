@@ -19,6 +19,12 @@ public class ActorRepository : IActorRepository
         return await _cinemaContext.Actors.FirstOrDefaultAsync(x => x.IdActor == idActor);
     }
 
+    public async Task<ICollection<Actor>> GetActorsAsync()
+    {
+        return await _cinemaContext.Actors.Include(x => x.ActorMovies).ThenInclude(x => x.Movie)
+            .ThenInclude(x => x.AgeRating).ToListAsync();
+    }
+
     public async Task<int> CreateActorAsync(MapDTO mapDto)
     {
         Actor actor = new Actor()
@@ -47,5 +53,46 @@ public class ActorRepository : IActorRepository
         await _cinemaContext.SaveChangesAsync();
 
         return actor.IdActor;
+    }
+
+    public async Task RemoveActorAsync(Actor actor)
+    {
+        _cinemaContext.Actors.Remove(actor);
+        await _cinemaContext.SaveChangesAsync();
+    }
+    //It is not the best, because when we dont have idActor with id, i couldn't check in the business part easily
+    public async Task RemoveActorAsync(int idActor)
+    {
+        Actor actor = new Actor()
+        {
+            IdActor = idActor
+        };
+
+        _cinemaContext.Attach(actor);
+        var entry = _cinemaContext.Entry(actor);
+        entry.State = EntityState.Deleted;
+
+        await _cinemaContext.SaveChangesAsync();
+    }
+
+    public async Task ModifyActorAsync(Actor actor, ActorUpdateDTO actorUpdateDto)
+    {
+
+        if (actorUpdateDto.Name != null && !actorUpdateDto.Name.Equals(""))
+        {
+            actor.Name = actorUpdateDto.Name;
+        }
+
+        if (actorUpdateDto.Surname != null && !actorUpdateDto.Surname.Equals(""))
+        {
+            actor.Surname = actorUpdateDto.Surname;
+        }
+
+        if (actorUpdateDto.NickName != null && !actorUpdateDto.NickName.Equals(""))
+        {
+            actor.Nickname = actorUpdateDto.NickName;
+        }
+
+        await _cinemaContext.SaveChangesAsync();
     }
 }

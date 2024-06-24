@@ -1,4 +1,6 @@
 ﻿using PractiseScratch.Dtos.Request;
+using PractiseScratch.Dtos.Response;
+using PractiseScratch.Entities;
 using PractiseScratch.Exceptions;
 using PractiseScratch.Repositories.Interfaces;
 using PractiseScratch.Services.Interfaces;
@@ -18,6 +20,45 @@ public class ActorService : IActorService
         _actorRepository = actorRepository;
     }
 
+    public async Task<ICollection<Actor2DTO>> GetListOfAllActors(string? name, string? surname)
+    {
+        ICollection<Actor> actors = await _actorRepository.GetActorsAsync();
+        if (actors.Count == 0)
+        {
+            throw new NotFoundException("No actors has been found in the database!");
+        }
+
+        ICollection<Actor2DTO> unfilteredActors = actors.Select(x => new Actor2DTO()
+        {
+            IdActor = x.IdActor,
+            Name = x.Name,
+            Surname = x.Surname,
+            Nickname = x.Nickname,
+            Movies = x.ActorMovies.Select(x => new Movie2DTO()
+            {
+                NameOfMovie = x.Movie.Name,
+                AgeRating = x.Movie.AgeRating.Name,
+                Role = x.CharacterName
+            }).ToList()
+        }).OrderBy(x=>x.Name).ToList();
+
+        if (name == null && surname == null)
+        {
+            return unfilteredActors;
+        }
+        
+        if (name != null && surname == null)
+        {
+            return unfilteredActors.Where(x => x.Name.Equals(name) ).ToList();
+        }
+        if (name == null && surname != null)
+        {
+            return unfilteredActors.Where(x => x.Surname.Equals(surname)).ToList();
+        }
+
+        return unfilteredActors.Where(x => x.Name.Equals(name) && x.Surname.Equals(surname)).ToList();
+    }
+    
     public async Task AssignActorToMovie(MapDTO mapDto)
     {
         //CHECK FOR THE ID MOVIE IN DATABASE
@@ -76,6 +117,26 @@ public class ActorService : IActorService
 
     public async Task RemoveActorAsync(int idActor)
     {
-        //Normal with 
+        Actor? actor = await _actorRepository.GetActorAsync(idActor);
+        
+        if (actor == null)
+        {
+            throw new NotFoundException("No actor was found in database with such an id");
+        }
+        
+        await _actorRepository.RemoveActorAsync(actor);
+        
+    }
+
+    public async Task ChangeActor(int idActor, ActorUpdateDTO actorUpdateDto)
+    {
+        Actor? actor = await _actorRepository.GetActorAsync(idActor);
+        
+        if (actor == null)
+        {
+            throw new NotFoundException("No actor was found in database with such an id!");
+        }
+        
+        await _actorRepository.ModifyActorAsync(actor,actorUpdateDto);
     }
 }
