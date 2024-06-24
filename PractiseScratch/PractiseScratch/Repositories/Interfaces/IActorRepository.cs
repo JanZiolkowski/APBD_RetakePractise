@@ -7,4 +7,5 @@ public interface IActorRepository
 {
     Task<Actor?> GetActorAsync(int idActor);
     Task<int> CreateActorAsync(MapDTO mapDto);
+    Task<int> CreateActorAsync(NewActorDTO newActorDto);
 }

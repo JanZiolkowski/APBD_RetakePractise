@@ -5,4 +5,6 @@ namespace PractiseScratch.Services.Interfaces;
 public interface IActorService
 {
     Task AssignActorToMovie(MapDTO mapDto);
+    Task<int> AddActorAsync(NewActorDTO newActorDto);
+    Task RemoveActorAsync(int idActor);
 }

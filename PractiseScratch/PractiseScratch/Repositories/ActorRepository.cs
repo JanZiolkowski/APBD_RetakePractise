@@ -33,4 +33,19 @@ public class ActorRepository : IActorRepository
 
         return actor.IdActor;
     }
+    
+    public async Task<int> CreateActorAsync(NewActorDTO newActorDto)
+    {
+        Actor actor = new Actor()
+        {
+            Name = newActorDto.Name,
+            Surname = newActorDto.Surname,
+            Nickname = newActorDto.NickName
+        };
+
+        await _cinemaContext.Actors.AddAsync(actor);
+        await _cinemaContext.SaveChangesAsync();
+
+        return actor.IdActor;
+    }
 }

@@ -53,4 +53,29 @@ public class ActorService : IActorService
             throw;
         }
     }
+
+    public async Task<int> AddActorAsync(NewActorDTO newActorDto)
+    {
+        if (newActorDto.Name.Length > 30)
+        {
+            throw new BadRequestException("The Name exceeds the limit of 30 characters!");
+        }
+
+        if (newActorDto.Surname.Length > 30)
+        {
+            throw new BadRequestException("The Surname exceeds the limit of 30 characters!");
+        }
+        if (newActorDto.NickName != null && newActorDto.NickName.Length > 30)
+        {
+            throw new BadRequestException("The Nickname exceeds the limit of 30 characters!");
+        }
+        
+
+        return await _actorRepository.CreateActorAsync(newActorDto);
+    }
+
+    public async Task RemoveActorAsync(int idActor)
+    {
+        //Normal with 
+    }
 }

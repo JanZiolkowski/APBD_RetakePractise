@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using PractiseScratch.Dtos.Request;
 using PractiseScratch.Exceptions;
 using PractiseScratch.Services.Interfaces;
@@ -15,7 +16,7 @@ public class ActorController:ControllerBase
         _actorService = actorService;
     }
 
-    [HttpPost]
+    [HttpPost("map")]
     public async Task<IActionResult> MapActorToMovie([FromBody]MapDTO mapDto)
     {
         try
@@ -32,5 +33,36 @@ public class ActorController:ControllerBase
             return BadRequest(e.Message);
         }
 
+    }
+    [HttpPost("add")]
+    public async Task<IActionResult> AddActor([FromBody] NewActorDTO newActorDto)
+    {
+        try
+        {
+            int Id = await _actorService.AddActorAsync(newActorDto);
+            return Ok(Id);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpDelete("remove/{idActor}")]
+    public async Task<IActionResult> RemoveActor([FromHeader] int idActor)
+    {
+        try
+        {
+            await _actorService.RemoveActorAsync(idActor);
+            return NoContent();
+        }
+        catch (BadRequestException e)
+        {
+            return BadRequest(e.Message);
+        }
+        catch (Exception e)
+        {
+            return StatusCode((int)HttpStatusCode.InternalServerError, e.Message);
+        }
     }
 }
