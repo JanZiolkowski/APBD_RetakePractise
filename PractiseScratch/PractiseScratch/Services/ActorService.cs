@@ -80,7 +80,7 @@ public class ActorService : IActorService
 
             if (await _actorMovieRepository.CheckIfThereIsAssignment(idActor))
             {
-                throw new AssignmentException("There is already existingassignment for the Actor!");
+                throw new AssignmentException("There is already existing assignment for the Actor!");
             }
             else
             {
@@ -123,9 +123,23 @@ public class ActorService : IActorService
         {
             throw new NotFoundException("No actor was found in database with such an id");
         }
-        
-        await _actorRepository.RemoveActorAsync(actor);
-        
+
+        using var transaction = await _actorMovieRepository.BeginTransactionAsync();
+        try
+        {
+            if ( actor.ActorMovies.Count>0)
+            {
+                await _actorMovieRepository.DeleteAssigments(actor.ActorMovies);
+            }
+
+            await _actorRepository.RemoveActorAsync(actor);
+            await transaction.CommitAsync();
+        }
+        catch (Exception e)
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task ChangeActor(int idActor, ActorUpdateDTO actorUpdateDto)

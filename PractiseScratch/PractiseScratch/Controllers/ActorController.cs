@@ -49,7 +49,7 @@ public class ActorController:ControllerBase
     }
 
     [HttpDelete("remove/{idActor:int}")]
-    public async Task<IActionResult> RemoveActor(int idActor)
+    public async Task<IActionResult> RemovedAssignedActor(int idActor)
     {
         try
         {
@@ -65,6 +65,7 @@ public class ActorController:ControllerBase
             return StatusCode((int)HttpStatusCode.InternalServerError, e.Message);
         }
     }
+
     [HttpPut("update/{idActor:int}")]
     public async Task<IActionResult> ChangeActor([FromBody]ActorUpdateDTO actorUpdateDto,int idActor)
     {

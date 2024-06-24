@@ -35,7 +35,7 @@ public class MoviesController : ControllerBase
 
     }
 
-    [HttpDelete("{idMovie:int}")]
+    [HttpDelete("delete/{idMovie:int}")]
     public async Task<IActionResult> DeleteMovie(int idMovie)
     {
         try
@@ -52,4 +52,25 @@ public class MoviesController : ControllerBase
             return Conflict(e.Message);
         }
     }
+    // [HttpPost("newMovie")]
+    // public async Task<IActionResult> AddMovie()
+    // {
+    //     try
+    //     {
+    //         
+    //     }
+    //     catch (NotFoundException exception)
+    //     {
+    //         return NotFound(exception.Message);
+    //     }
+    //     catch (BadRequestException exception)
+    //     {
+    //         return BadRequest(exception.Message);
+    //     }
+    //     catch (Exception exception)
+    //     {
+    //         return Conflict(exception.Message);
+    //     }
+    // }
+
 }

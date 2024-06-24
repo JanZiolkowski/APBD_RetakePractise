@@ -16,7 +16,7 @@ public class ActorRepository : IActorRepository
     }
     public async Task<Actor?> GetActorAsync(int idActor)
     {
-        return await _cinemaContext.Actors.FirstOrDefaultAsync(x => x.IdActor == idActor);
+        return await _cinemaContext.Actors.Include(x=>x.ActorMovies).FirstOrDefaultAsync(x => x.IdActor == idActor);
     }
 
     public async Task<ICollection<Actor>> GetActorsAsync()
