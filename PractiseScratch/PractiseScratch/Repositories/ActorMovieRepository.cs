@@ -38,4 +38,14 @@ public class ActorMovieRepository : IActorMovieRepository
         var number = await _cinemaContext.ActorMovies.Where(x => x.IdActor == idActor).CountAsync();
         return number > 0;
     }
+
+    public async Task DeleteAssigments(ICollection<ActorMovie> actorMovies)
+    {
+        foreach (var assignment in actorMovies)
+        {
+            _cinemaContext.Remove(assignment);
+        }
+
+        await _cinemaContext.SaveChangesAsync();
+    }
 }

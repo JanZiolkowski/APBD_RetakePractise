@@ -1,4 +1,5 @@
 ﻿using PractiseScratch.Dtos.Response;
+using PractiseScratch.Entities;
 using PractiseScratch.Exceptions;
 using PractiseScratch.Repositories.Interfaces;
 using PractiseScratch.Services.Interfaces;
@@ -8,10 +9,12 @@ namespace PractiseScratch.Services;
 public class MoviesService : IMoviesService
 {
     private IMoviesRepository _moviesRepository;
+    private IActorMovieRepository _actorMovieRepository;
 
-    public MoviesService(IMoviesRepository moviesRepository)
+    public MoviesService(IMoviesRepository moviesRepository,IActorMovieRepository actorMovieRepository)
     {
         _moviesRepository = moviesRepository;
+        _actorMovieRepository = actorMovieRepository;
     }
 
     public async Task<ICollection<MovieDTO>> GetMoviesAsync(string? ageRating, DateTime? releaseDate)
@@ -55,15 +58,35 @@ public class MoviesService : IMoviesService
 
         if (ageRating == null && releaseDate != null)
         {
-            return movieDtos.Where(x => x.ReleaseDate == releaseDate).ToList();
+            return movieDtos.Where(x => x.ReleaseDate >= releaseDate).ToList();
         }
 
-        return movieDtos.Where(x => x.ReleaseDate == releaseDate && x.AgeRating.Equals(ageRating)).ToList();
+        return movieDtos.Where(x => x.ReleaseDate >= releaseDate && x.AgeRating.Equals(ageRating)).ToList();
 
     }
 
     public async Task DeleteMovieAsync(int idMovie)
     {
-        throw new NotImplementedException();
+        //Get a given movie and with it's list of ActorMovies
+        Movie? movie = await _moviesRepository.GetMovieAsync(idMovie);
+        if (movie == null)
+        {
+            throw new NotFoundException("Movie with given id has not been found!");
+        }
+
+        using var transaction = await _actorMovieRepository.BeginTransactionAsync();
+        try
+        {
+            //Delete assignments
+            await _actorMovieRepository.DeleteAssigments(movie.ActorMovies);
+            //Delete the movie itself
+            await _moviesRepository.DeleteMovie(movie);
+            await transaction.CommitAsync();
+        }
+        catch (Exception e)
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 }

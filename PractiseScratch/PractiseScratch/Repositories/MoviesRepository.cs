@@ -29,4 +29,15 @@ public class MoviesRepository : IMoviesRepository
 
         return true;
     }
+
+    public async Task<Movie?> GetMovieAsync(int idMovie)
+    {
+        return await _cinemaContext.Movies.Include(x=>x.ActorMovies).FirstOrDefaultAsync(x => x.IdMovie == idMovie);
+    }
+
+    public async Task DeleteMovie(Movie movie)
+    {
+        _cinemaContext.Remove(movie);
+        await _cinemaContext.SaveChangesAsync();
+    }
 }
